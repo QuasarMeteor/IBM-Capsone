@@ -49,17 +49,16 @@ app.layout = html.Div(children=[html.H1('SpaceX Launch Records Dashboard',
 
 @app.callback(Output(component_id='success-pie-chart', component_property='figure'),
               Input(component_id='site-dropdown', component_property='value'))
-def get_pie_chart(entered_site):
+def get_pie_chart(site_dropdown):
     filtered_df = spacex_df
-    if entered_site == 'ALL':
+    if site_dropdown == 'ALL':
         fig = px.pie(filtered_df, values='class', 
         names='Launch Site', 
         title='Successful Launches for All Sites')
         return fig
     else:
-        filtered_df = spacex_df[spacex_df['Launch Site'] == entered_site]
-        filtered_df = filtered_df.groupby(['Launch Site', 'class']).size().reset_index()
-        fig = px.pie(filtered_df, values = 'class count', names = 'class', title = f"Successful Launch Totals for {entered_site}")
+        filtered_df = spacex_df.loc[spacex_df['Launch Site'] == site_dropdown]
+        fig = px.pie(filtered_df, names = 'class', title = f"Successful Launch Totals for {site_dropdown}")
         return fig
 
 # TASK 4:
@@ -68,13 +67,13 @@ def get_pie_chart(entered_site):
              [Input(component_id='site-dropdown', component_property='value'),
              Input(component_id = 'payload-slider', component_property = 'value')])
 
-def get_scatter(entered_site, payload):
+def get_scatter(site_dropdown, payload):
     filtered_df = spacex_df[spacex_df['Payload Mass (kg)'].between(payload[0],payload[1])]
-    if entered_site == 'ALL':
+    if site_dropdown == 'ALL':
         fig = px.scatter(filtered_df,x='Payload Mass (kg)',y='class',color='Booster Version Category',title='Successful Payload Mass for All Sites')
         return fig
     else:
-        filtered_df = spacex_df[spacex_df['Launch Site'] == entered_site]
+        filtered_df = spacex_df[spacex_df['Launch Site'] == site_dropdown]
         fig = px.scatter(filtered_df,x='Payload Mass (kg)',y='class',color='Booster Version Category',title=f"Successful Payload Mass for {entered_site} Sites")
         return fig
 
